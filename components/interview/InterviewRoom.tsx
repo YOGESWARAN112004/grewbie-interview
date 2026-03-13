@@ -51,23 +51,35 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
         // Stop Vapi call
         try { vapiInstance?.stop() } catch { }
 
+        // Read latest state directly from store to avoid stale closure
+        const currentState = useInterviewStore.getState()
+        const currentTranscript = currentState.transcript
+        const currentElapsed = currentState.elapsed
+
         // Save transcript + generate feedback
         try {
-            await fetch('/api/interview/end', {
+            console.log('[Interview End] Sending transcript with', currentTranscript.length, 'messages, elapsed:', currentElapsed)
+            const res = await fetch('/api/interview/end', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     applicationId,
-                    transcript,
-                    duration: elapsed,
+                    transcript: currentTranscript,
+                    duration: currentElapsed,
                 }),
             })
+            if (!res.ok) {
+                const errData = await res.json()
+                console.error('[Interview End] API error:', res.status, errData)
+            } else {
+                console.log('[Interview End] Successfully saved transcript and feedback')
+            }
         } catch (err) {
             console.error('Failed to save interview:', err)
         }
 
         router.push('/dashboard')
-    }, [applicationId, elapsed, router, setStatus, transcript])
+    }, [applicationId, router, setStatus])
 
     // Auto-end at 15 minutes
     useEffect(() => {
@@ -85,14 +97,35 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
         }
     }, [timeRemaining, status, endInterview])
 
-    // Cleanup on unmount (only stop media, don't reset store so we can reload)
+    // Cleanup on unmount — save transcript as last resort via beacon
     useEffect(() => {
+        const saveBeacon = () => {
+            const state = useInterviewStore.getState()
+            if (state.transcript.length > 0 && !endedRef.current) {
+                console.log('[Interview Beacon] Saving', state.transcript.length, 'messages via beacon on unmount/close')
+                navigator.sendBeacon(
+                    '/api/interview/end',
+                    new Blob([JSON.stringify({
+                        applicationId,
+                        transcript: state.transcript,
+                        duration: state.elapsed,
+                    })], { type: 'application/json' })
+                )
+            }
+        }
+
+        // Save on tab close / refresh
+        window.addEventListener('beforeunload', saveBeacon)
+
         return () => {
+            window.removeEventListener('beforeunload', saveBeacon)
             if (timerRef.current) clearInterval(timerRef.current)
             cameraStreamRef.current?.getTracks().forEach((t) => t.stop())
             screenStreamRef.current?.getTracks().forEach((t) => t.stop())
+            // Last-resort save on component unmount (e.g. navigation away)
+            saveBeacon()
         }
-    }, [])
+    }, [applicationId])
 
     const requestCamera = async () => {
         try {
@@ -157,6 +190,7 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
             })
 
             vapiInstance.on('call-end', () => {
+                console.log('[Vapi call-end] Call ended')
                 if (!endedRef.current) endInterview()
             })
 
@@ -166,7 +200,9 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
                     console.error('Vapi error keys:', Object.keys(err))
                     console.error('Vapi error message:', err.message || err.error)
                 }
-                setError('Voice connection error. Please try again.')
+                // On error, save whatever transcript we have — don't lose data
+                console.log('[Vapi Error] Triggering endInterview to save transcript data')
+                if (!endedRef.current) endInterview()
             })
 
             await vapiInstance.start({
@@ -181,7 +217,7 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
                 voice: { provider: 'openai', voiceId: 'nova' },
                 firstMessage: data.firstMessage,
                 maxDurationSeconds: 600, // 10 mins hard limit
-                // silenceTimeoutSeconds: 600 // Temporarily disabled to debug its impact
+                silenceTimeoutSeconds: 300, // 5 min silence threshold — prevents premature call-end
             } as any)
 
             setStatus('active')

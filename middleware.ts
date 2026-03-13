@@ -5,6 +5,7 @@ const isPublicRoute = createRouteMatcher([
     '/sign-in(.*)',
     '/sign-up(.*)',
     '/api/webhooks(.*)',
+    '/api/interview/end', // Must be public for navigator.sendBeacon fallback saves
 ])
 
 export default clerkMiddleware(async (auth, req) => {

@@ -85,15 +85,57 @@ export default async function AdminPage() {
                                             MAYBE: 'var(--accent2)', NO_HIRE: 'var(--red)',
                                         }
 
+                                        const miniScores = feedback.scores ? [
+                                            { label: 'TECH', val: feedback.scores.technical },
+                                            { label: 'COMM', val: feedback.scores.communication },
+                                            { label: 'LEAD', val: feedback.scores.leadership },
+                                            { label: 'PRES', val: feedback.scores.pressureHandling },
+                                        ] : [
+                                            { label: 'TECH', val: feedback.technicalScore },
+                                            { label: 'COMM', val: feedback.communicationScore },
+                                            { label: 'CULT', val: feedback.cultureScore },
+                                        ]
+
+                                        const duration = app.interview.duration
+                                        const durationStr = duration ? `${Math.floor(duration / 60)}m ${duration % 60}s` : null
+
                                         return (
                                             <div className="summary-row">
                                                 <div className="summary-content">
-                                                    <div className="summary-section">
-                                                        <span className="summary-label font-mono" style={{ color: recColor[feedback.recommendation ?? 'MAYBE'] }}>
-                                                            {feedback.recommendation?.replace('_', ' ') ?? 'NO RECOMMENDATION'}
-                                                        </span>
-                                                        <p className="summary-text">{feedback.summary}</p>
+                                                    <div className="summary-top">
+                                                        <div className="summary-left">
+                                                            <span className="summary-label font-mono" style={{ color: recColor[feedback.recommendation ?? 'MAYBE'] }}>
+                                                                {feedback.recommendation?.replace('_', ' ') ?? 'NO RECOMMENDATION'}
+                                                            </span>
+                                                            {feedback.overallScore && (
+                                                                <span className="summary-score font-mono">{feedback.overallScore}/10</span>
+                                                            )}
+                                                            {feedback.hiringConfidence != null && (
+                                                                <span className="summary-confidence font-mono">{feedback.hiringConfidence}% confidence</span>
+                                                            )}
+                                                            {durationStr && (
+                                                                <span className="summary-duration font-mono">⏱ {durationStr}</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="summary-mini-scores">
+                                                            {miniScores.map(({ label, val }) => (
+                                                                <div key={label} className="mini-score">
+                                                                    <div className="ms-label font-mono">{label}</div>
+                                                                    <div className="ms-bar-track">
+                                                                        <div className="ms-bar-fill" style={{
+                                                                            width: `${(val ?? 0) * 10}%`,
+                                                                            background: (val ?? 0) >= 7 ? 'var(--green)' : (val ?? 0) >= 5 ? 'var(--accent)' : 'var(--red)'
+                                                                        }} />
+                                                                    </div>
+                                                                    <div className="ms-val font-mono">{val ?? '—'}</div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
+                                                    <p className="summary-text">{feedback.summary}</p>
+                                                    {feedback.keyQuotes && feedback.keyQuotes.length > 0 && (
+                                                        <div className="summary-quote font-mono">&ldquo;{feedback.keyQuotes[0]}&rdquo;</div>
+                                                    )}
                                                 </div>
                                             </div>
                                         )
@@ -138,7 +180,7 @@ export default async function AdminPage() {
         
         .table-row.has-summary { border-bottom: none; }
         .summary-row {
-            padding: 16px 24px 24px 24px;
+            padding: 0 24px 20px 24px;
             background: rgba(255, 255, 255, 0.01);
             border-bottom: 1px solid var(--border);
         }
@@ -147,20 +189,32 @@ export default async function AdminPage() {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 4px;
-            padding: 16px;
+            padding: 16px 20px;
         }
+        .summary-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
+        .summary-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .summary-label {
             font-size: 11px;
             letter-spacing: 1.5px;
             font-weight: 700;
-            margin-bottom: 8px;
-            display: inline-block;
         }
+        .summary-score { font-size: 16px; font-weight: 800; color: var(--accent); }
+        .summary-confidence { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; background: rgba(255,255,255,0.04); padding: 3px 8px; border-radius: 2px; border: 1px solid var(--border); }
+        .summary-duration { font-size: 10px; color: var(--muted); letter-spacing: 0.5px; }
+        .summary-mini-scores { display: flex; gap: 12px; }
+        .mini-score { display: flex; align-items: center; gap: 4px; }
+        .ms-label { font-size: 8px; letter-spacing: 1px; color: var(--muted); width: 32px; }
+        .ms-bar-track { width: 48px; height: 5px; background: var(--card); border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
+        .ms-bar-fill { height: 100%; border-radius: 3px; }
+        .ms-val { font-size: 10px; color: var(--text); font-weight: 700; width: 14px; text-align: right; }
         .summary-text {
             color: var(--muted);
             font-size: 13px;
             line-height: 1.6;
+            margin: 0;
         }
+        .summary-quote { font-size: 11px; color: var(--accent2); font-style: italic; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); line-height: 1.5; }
+        @media(max-width: 768px) { .summary-mini-scores { display: none; } }
       `}</style>
         </main>
     )
