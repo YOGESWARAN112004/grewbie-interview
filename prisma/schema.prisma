@@ -1,0 +1,76 @@
+// This is your Prisma schema file for PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+model User {
+  id          String       @id @default(cuid())
+  clerkId     String       @unique
+  email       String       @unique
+  name        String
+  role        Role         @default(CANDIDATE)
+  application Application?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Application {
+  id             String      @id @default(cuid())
+  userId         String      @unique
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone          String?
+  portfolio      String?
+  roles          String[]
+  commitment     String
+  experience     Int         @default(0)
+  traits         String[]
+  equityInterest String
+  motivation     String
+  ownershipEg    String?
+  status         AppStatus   @default(PENDING)
+  interview      Interview?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Interview {
+  id            String          @id @default(cuid())
+  applicationId String          @unique
+  application   Application     @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  vapiCallId    String?
+  transcript    Json?
+  aiFeedback    String?
+  duration      Int?
+  status        InterviewStatus @default(PENDING)
+  startedAt     DateTime?
+  endedAt       DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+enum Role {
+  CANDIDATE
+  ADMIN
+}
+
+enum AppStatus {
+  PENDING
+  REVIEWED
+  ACCEPTED
+  REJECTED
+}
+
+enum InterviewStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}

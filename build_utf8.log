@@ -1,0 +1,117 @@
+﻿
+> ai-interviewer@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env
+
+node.exe : ΓÜá The "middleware" file convention is 
+deprecated. Please use "proxy" instead. Learn more: 
+https://nextjs.org/docs/messages/middleware-to-proxy
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá Th  
+  e "middle...leware-to-proxy:String) [], RemoteE    
+xception
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 2.3s
+  Running TypeScript ...
+  Collecting page data using 19 workers ...
+
+<--- Last few GCs --->
+
+[18400:0000025421763000]      743 ms: Mark-Compact 
+(reduce) 16.7 (34.2) -> 13.9 (17.7) MB, pooled: 0 
+MB, 9.87 / 0.00 ms  (average mu = 0.987, current mu 
+= 0.987) last resort; GC in old space requested
+[18400:0000025421763000]      758 ms: Mark-Compact 
+(reduce) 13.9 (17.7) -> 13.9 (15.7) MB, pooled: 0 
+MB, 15.64 / 0.00 ms  (average mu = 0.966, current mu 
+= 0.002) last resort; GC in old space requested
+
+FATAL ERROR: Zone Allocation failed - process out of 
+memory
+----- Native stack trace -----
+
+ 1: 00007FF705AACFF9 
+ 2: 00007FF7066DEDB7 
+ 3: 00007FF70605BF56 
+ 4: 00007FF7066C5E36 
+ 5: 00007FF70616D9BC 
+ 6: 00007FF70617EBF9 
+ 7: 00007FF70617AE99 
+ 8: 00007FF70616DC86 
+ 9: 00007FF70616D27D 
+10: 00007FF70617942B 
+11: 00007FF70616D9D2 
+12: 00007FF70617EBF9 
+13: 00007FF70617AE99 
+14: 00007FF70616DC86 
+15: 00007FF70616D27D 
+16: 00007FF70617942B 
+17: 00007FF70616D9D2 
+18: 00007FF70616D27D 
+19: 00007FF70616B9AB 
+20: 00007FF70616ACE6 
+21: 00007FF7061957C8 
+22: 00007FF706189770 
+23: 00007FF7061ADD13 
+24: 00007FF70618E204 
+25: 00007FF706196C6B 
+26: 00007FF70618C63A 
+27: 00007FF70619D3D0 
+28: 00007FF70619C6F4 
+29: 00007FF7061A2074 
+30: 00007FF7061A04FE 
+31: 00007FF70619D4DB 
+32: 00007FF70619C6AE 
+33: 00007FF7061A2074 
+34: 00007FF7061AD44F 
+35: 00007FF706196C6B 
+36: 00007FF70618C63A 
+37: 00007FF70619D3D0 
+38: 00007FF70619C6F4 
+39: 00007FF7061A2074 
+40: 00007FF7061A04FE 
+41: 00007FF70619D4DB 
+42: 00007FF70619C6AE 
+43: 00007FF7061A2074 
+44: 00007FF7061AD44F 
+45: 00007FF706196C6B 
+46: 00007FF70619616A 
+47: 00007FF7061897F7 
+48: 00007FF7061889C4 
+49: 00007FF706187CC2 
+50: 00007FF70618796A 
+51: 00007FF706182FD9 
+52: 00007FF70665C7CF 
+53: 00007FF70665F5C1 
+54: 00007FF7066E8253 
+55: 00007FF705AC8593 
+56: 00007FF705AC6BB1 
+57: 000002545960F64D 
+
+<--- Last few GCs --->
+
+[15128:000001BA0DA92000]      231 ms: Scavenge 9.3 
+(12.0) -> 8.5 (17.0) MB, pooled: 0 MB, 1.48 / 0.00 
+ms  (average mu = 1.000, current mu = 1.000) 
+allocation failure; 
+[15128:000001BA0DA92000]      407 ms: Scavenge 14.8 
+(19.5) -> 12.7 (20.5) MB, pooled: 0 MB, 0.94 / 0.01 
+ms  (average mu = 1.000, current mu = 1.000) 
+allocation failure; 
+[15128:000001BA0DA92000]      520 ms: Scavenge 15.8 
+(20.5) -> 14.0 (30.3) MB, pooled: 0 MB, 1.44 / 0.00 
+ms  (average mu = 1.000, current mu = 1.000) 
+allocation failure; 
+
+FATAL ERROR: Zone Allocation failed - process out of 
+memory
+----- Native stack trace -----
+
+Γ¿» Next.js build worker exited with code: 134 and 
+signal: null
