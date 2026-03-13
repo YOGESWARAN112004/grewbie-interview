@@ -160,8 +160,12 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
                 if (!endedRef.current) endInterview()
             })
 
-            vapiInstance.on('error', (err: unknown) => {
-                console.error('Vapi error', err)
+            vapiInstance.on('error', (err: any) => {
+                console.error('Vapi error detail:', err)
+                if (err && typeof err === 'object') {
+                    console.error('Vapi error keys:', Object.keys(err))
+                    console.error('Vapi error message:', err.message || err.error)
+                }
                 setError('Voice connection error. Please try again.')
             })
 
@@ -177,7 +181,7 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
                 voice: { provider: 'openai', voiceId: 'nova' },
                 firstMessage: data.firstMessage,
                 maxDurationSeconds: 600, // 10 mins hard limit
-                silenceTimeoutSeconds: 600 // Don't hang up on silence
+                // silenceTimeoutSeconds: 600 // Temporarily disabled to debug its impact
             } as any)
 
             setStatus('active')
