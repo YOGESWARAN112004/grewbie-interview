@@ -37,15 +37,26 @@ export async function POST(req: Request) {
 
     const vapiCallId = randomUUID()
 
-    // Update interview record
-    await prisma.interview.update({
-        where: { applicationId: application.id },
-        data: {
-            vapiCallId,
-            status: 'IN_PROGRESS',
-            startedAt: new Date(),
-        },
-    })
+    // Create or update interview record (handles both fresh starts and re-attempts)
+    if (application.interview) {
+        await prisma.interview.update({
+            where: { applicationId: application.id },
+            data: {
+                vapiCallId,
+                status: 'IN_PROGRESS',
+                startedAt: new Date(),
+            },
+        })
+    } else {
+        await prisma.interview.create({
+            data: {
+                applicationId: application.id,
+                vapiCallId,
+                status: 'IN_PROGRESS',
+                startedAt: new Date(),
+            },
+        })
+    }
 
     return NextResponse.json({
         callId: vapiCallId,
