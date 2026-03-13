@@ -51,10 +51,17 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
         // Stop Vapi call
         try { vapiInstance?.stop() } catch { }
 
+        // Wait 2 seconds for any remaining transcript messages to flush through Vapi
+        console.log('[Interview End] Waiting 2s for transcript messages to flush...')
+        await new Promise((r) => setTimeout(r, 2000))
+
         // Read latest state directly from store to avoid stale closure
         const currentState = useInterviewStore.getState()
         const currentTranscript = currentState.transcript
         const currentElapsed = currentState.elapsed
+
+        console.log('[Interview End] Store state — transcript length:', currentTranscript.length, 'elapsed:', currentElapsed)
+        console.log('[Interview End] Transcript messages:', JSON.stringify(currentTranscript.map(m => ({ role: m.role, content: m.content.substring(0, 50) }))))
 
         // Save transcript + generate feedback
         try {
@@ -72,7 +79,8 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
                 const errData = await res.json()
                 console.error('[Interview End] API error:', res.status, errData)
             } else {
-                console.log('[Interview End] Successfully saved transcript and feedback')
+                const result = await res.json()
+                console.log('[Interview End] API response:', result)
             }
         } catch (err) {
             console.error('Failed to save interview:', err)
@@ -180,12 +188,15 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
             vapiInstance.on('speech-end', () => { })
 
             vapiInstance.on('message', (msg: { type: string; role?: string; transcript?: string; transcriptType?: string }) => {
+                console.log('[Vapi Message]', msg.type, msg.transcriptType ?? '', msg.role ?? '', (msg.transcript ?? '').substring(0, 80))
                 if (msg.type === 'transcript' && msg.transcriptType === 'final') {
-                    addMessage({
-                        role: msg.role === 'assistant' ? 'assistant' : 'user',
+                    const newMsg = {
+                        role: (msg.role === 'assistant' ? 'assistant' : 'user') as 'user' | 'assistant',
                         content: msg.transcript ?? '',
                         timestamp: Date.now(),
-                    })
+                    }
+                    addMessage(newMsg)
+                    console.log('[Vapi Message] Added to store. Current store length:', useInterviewStore.getState().transcript.length)
                 }
             })
 
