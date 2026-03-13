@@ -228,7 +228,9 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
                 voice: { provider: 'openai', voiceId: 'nova' },
                 firstMessage: data.firstMessage,
                 maxDurationSeconds: 600, // 10 mins hard limit
-                silenceTimeoutSeconds: 300, // 5 min silence threshold — prevents premature call-end
+                silenceTimeoutSeconds: 300, // 5 min silence threshold
+                responseDelaySeconds: 1.2, // Wait 1.2s after candidate stops speaking before AI responds
+                endCallFunctionEnabled: false, // Don't let the AI end the call on its own
             } as any)
 
             setStatus('active')
