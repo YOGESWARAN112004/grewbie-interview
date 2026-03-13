@@ -29,7 +29,7 @@ Provide structured feedback on the candidate in JSON format with these fields:
   "technicalScore": number (1-10),
   "cultureScore": number (1-10),
   "recommendation": "STRONG_HIRE" | "HIRE" | "MAYBE" | "NO_HIRE",
-  "summary": string (2-3 sentences),
+  "summary": string (A comprehensive 3-5 sentence narrative deeply summarizing the transcript, evaluating their specific technical abilities, stress handling, and overall fit for the role. This must capture a profound understanding of who the candidate is based on the interview.),
   "nextSteps": string
 }`,
             },

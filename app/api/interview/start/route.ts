@@ -50,6 +50,6 @@ export async function POST(req: Request) {
     return NextResponse.json({
         callId: vapiCallId,
         systemPrompt,
-        firstMessage: `Hi ${user.name}, I'm your AI interviewer today. We have exactly 15 minutes together. Let's get started — based on your application, I see you're interested in ${application.roles.join(' and ')}. Can you briefly introduce yourself and tell me what excites you most about this opportunity?`
+        firstMessage: `Hi ${user.name}, I'm your AI interviewer today. We have exactly 10 minutes together. Let's get started — based on your application, I see you're interested in ${application.roles.join(' and ')}. Can you briefly introduce yourself and tell me what excites you most about this opportunity?`
     })
 }

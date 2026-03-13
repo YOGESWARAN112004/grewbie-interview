@@ -176,8 +176,9 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
                 },
                 voice: { provider: 'openai', voiceId: 'nova' },
                 firstMessage: data.firstMessage,
-                maxDurationSeconds: 900 // 15 mins hard limit
-            })
+                maxDurationSeconds: 600, // 10 mins hard limit
+                silenceTimeoutSeconds: 600 // Don't hang up on silence
+            } as any)
 
             setStatus('active')
         } catch (err: unknown) {
@@ -205,7 +206,7 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
             <div className="ir-header">
                 <div className="badge"><span className="badge-dot" />AI Interview Session</div>
                 <div className={`timer timer-${urgency}`}>
-                    {status === 'idle' ? '15:00' : fmt(timeRemaining)}
+                    {status === 'idle' ? '10:00' : fmt(timeRemaining)}
                 </div>
             </div>
 
@@ -309,7 +310,7 @@ export default function InterviewRoom({ applicationId, candidateName }: Props) {
                             onClick={startInterview}
                             disabled={!canStart}
                         >
-                            {canStart ? '▶ Start 15-Min Interview' : 'Enable camera & screen to start'}
+                            {canStart ? '▶ Start 10-Min Interview' : 'Enable camera & screen to start'}
                         </button>
                     </div>
                 )}

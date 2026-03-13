@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export const INTERVIEW_DURATION = 15 * 60 // 900 seconds
+export const INTERVIEW_DURATION = 10 * 60 // 600 seconds
 
 interface Message {
     role: 'user' | 'assistant'
